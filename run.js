@@ -1,2 +1,2 @@
 const libnut = require("bindings")("libnut");
-libnut.setClipboardHTML("ABCD");
+libnut.setClipboardHTML("<b>ABCD</b>", "plaintext");
