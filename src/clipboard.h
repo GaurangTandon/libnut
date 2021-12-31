@@ -9,7 +9,7 @@ extern "C"
 {
 #endif
 
-int setClipBoardHTMLRaw(const char *html, const char* fallbackPlaintext);
+int setClipboardHTML(const char *html, const char* fallbackPlaintext);
 
 #ifdef __cplusplus
 }

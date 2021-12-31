@@ -782,7 +782,7 @@ Napi::Number _setClipboardHTML(const Napi::CallbackInfo &info) {
 
 	std::string htmlString = info[0].As<Napi::String>();
 	std::string plainTextString = info[1].As<Napi::String>();
-	auto returnValue = setClipBoardHTMLRaw(htmlString.c_str(), plainTextString.c_str());
+	auto returnValue = setClipboardHTML(htmlString.c_str(), plainTextString.c_str());
 	printf("Exit code: %d\n", returnValue);
 
 	return Napi::Number::New(env, returnValue);

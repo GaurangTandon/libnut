@@ -135,7 +135,7 @@ int setClipboardData(int clipboardDescriptor, char* buf, size_t allocSize) {
  * https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-closeclipboard
 */
 
-int setClipBoardHTMLRaw(const char *html, const char *fallbackPlaintext)
+int setClipboardHTML(const char *html, const char *fallbackPlaintext)
 {
     // Get clipboard id for HTML format...
     static int cfid = 0;
