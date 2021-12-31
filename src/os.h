@@ -19,6 +19,7 @@
 	#define STRICT /* Require use of exact types. */
 	#define WIN32_LEAN_AND_MEAN 1 /* Speed up compilation. */
 	#include <windows.h>
+	#include <winuser.h>
 #elif !defined(IS_MACOSX) && !defined(USE_X11)
 	#error "Sorry, this platform isn't supported yet!"
 #endif
