@@ -62,13 +62,59 @@ char *prepareHTMLDescriptor(const char *html)
     wsprintf(ptr + 12, "%08u", strstr(buf, "<!--EndFrag") - buf);
     *(ptr + 12 + 8) = '\r';
 
-    printf("Clipboard contents: %s", buf);
-
     return buf;
 }
 
-int setClipboardData() {
+int setClipboardData(int clipboardDescriptor, char* buf, size_t allocSize) {
+    int exitCode = 0;
 
+    printf("Clipboard contents: %s\n", buf);
+
+    // Allocate global memory for transfer to clipboard context
+    // TODO: is this susceptible to memory leaks? Should we do +1 to buffer size?
+    HGLOBAL hText = GlobalAlloc(GMEM_MOVEABLE, allocSize);
+
+    if (hText)
+    {
+        char *ptr = (char *)GlobalLock(hText);
+        if (ptr)
+        {
+            strcpy(ptr, buf);
+
+            // TODO: why are we unlocking the handle before setting clipboard data?
+            // Would it allow the memeory to be modified by some other program?
+            if (!GlobalUnlock(hText))
+            {
+                if (GetLastError() == NO_ERROR)
+                {
+                    if (!SetClipboardData(clipboardDescriptor, hText))
+                    {
+                        exitCode = 5;
+                    }
+                }
+                else
+                {
+                    exitCode = 4;
+                }
+            }
+            else
+            {
+                exitCode = 4;
+            }
+        }
+        else
+        {
+            exitCode = 3;
+        }
+    }
+    else
+    {
+        exitCode = 2;
+    }
+
+    GlobalFree(hText);
+
+    return exitCode;
 }
 
 /* 
@@ -101,108 +147,29 @@ int setClipBoardHTMLRaw(const char *html, const char *fallbackPlaintext)
         EmptyClipboard();
 
         // html text
-        {
-            // Allocate global memory for transfer to clipboard context
-            // TODO: is this susceptible to memory leaks? Should we do +1 to buffer size?
-            HGLOBAL hText = GlobalAlloc(GMEM_MOVEABLE, strlen(buf));
+        int htmlExitCode = setClipboardData(cfid, buf, strlen(buf));
 
-            if (hText)
-            {
-                char *ptr = (char *)GlobalLock(hText);
-                if (ptr)
-                {
-                    strcpy(ptr, buf);
-
-                    // TODO: why are we unlocking the handle before setting clipboard data?
-                    // Would it allow the memeory to be modified by some other program?
-                    if (!GlobalUnlock(hText))
-                    {
-                        if (GetLastError() == NO_ERROR)
-                        {
-                            if (!SetClipboardData(cfid, hText))
-                            {
-                                exitCode = 5;
-                            }
-                        }
-                        else
-                        {
-                            exitCode = 4;
-                        }
-                    }
-                    else
-                    {
-                        exitCode = 4;
-                    }
-                }
-                else
-                {
-                    exitCode = 3;
-                }
+        if (!htmlExitCode) {
+            // Set fall back text if available
+            size_t fallbackPlaintextLen = fallbackPlaintext ? wcslen(fallbackPlaintext) + 1 : 0;
+            if (fallbackPlaintext) {
+                // TODO: we should use CF_UNICODETEXT here instead?
+                exitCode = setClipboardData(CF_TEXT, fallbackPlaintext, fallbackPlaintextLen * sizeof(wchar_t));
             }
-            else
-            {
-                exitCode = 2;
-            }
-
-            GlobalFree(hText);
-        }
-
-        // Set fall back text if available
-        size_t fallbackPlaintextLen = fallbackPlaintext ? wcslen(fallbackPlaintext) + 1 : 0;
-        if (fallbackPlaintextLen)
-        {
-            HANDLE hMem = GlobalAlloc(GMEM_MOVEABLE, fallbackPlaintextLen * sizeof(wchar_t));
-            if (hMem)
-            {
-                char *ptr = (char *)GlobalLock(hMem);
-                if (ptr)
-                {
-                    strcpy(ptr, fallbackPlaintext);
-                    printf("Here: %s\n", ptr);
-                    if (!GlobalUnlock(hMem))
-                    {
-                        if (GetLastError() == NO_ERROR)
-                        {
-                            // TODO: we should use CF_UNICODETEXT here instead?
-                            if (!SetClipboardData(CF_TEXT, hMem))
-                            {
-                                exitCode = 9;
-                            }
-                        }
-                        else
-                        {
-                            exitCode = 8;
-                        }
-                    }
-                    else
-                    {
-                        exitCode = 8;
-                    }
-                }
-                else
-                {
-                    exitCode = 7;
-                }
-            }
-            else
-            {
-                exitCode = 6;
-            }
-
-            GlobalFree(hMem);
+        } else {
+            exitCode = htmlExitCode;
         }
 
         if (!CloseClipboard())
         {
-            exitCode = 10;
+            exitCode = -2;
         }
     }
     else
     {
-        exitCode = 1;
+        exitCode = -1;
     }
 
-    // Clean up...
     free(buf);
 
     return exitCode;
