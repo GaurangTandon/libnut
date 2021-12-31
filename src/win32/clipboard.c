@@ -7,7 +7,10 @@
     Check the exit code of each method that can go wrong 
     Using unintended memory is the main cause of all bugs in C ever 
     See pie chart at this blog
-    https://daniel.haxx.se/blog/2021/03/09/half-of-curls-vulnerabilities-are-c-mistakes/ */
+    https://daniel.haxx.se/blog/2021/03/09/half-of-curls-vulnerabilities-are-c-mistakes/ 
+    
+    Also, we always return from a function only in the end so as to free up any memory that
+    we may have initialized on the way */
 
 // Clipboard format explanation at https://docs.microsoft.com/en-us/windows/win32/dataxchg/html-clipboard-format
 // Example code
@@ -144,25 +147,27 @@ int setClipBoardHTMLRaw(const char *html, const char *fallbackPlaintext)
 
     if (OpenClipboard(NULL))
     {
-        EmptyClipboard();
-
-        // html text
-        int htmlExitCode = setClipboardData(cfid, buf, strlen(buf));
-
-        if (!htmlExitCode) {
-            // Set fall back text if available
-            size_t fallbackPlaintextLen = fallbackPlaintext ? wcslen(fallbackPlaintext) + 1 : 0;
-            if (fallbackPlaintext) {
-                // TODO: we should use CF_UNICODETEXT here instead?
-                exitCode = setClipboardData(CF_TEXT, fallbackPlaintext, fallbackPlaintextLen * sizeof(wchar_t));
-            }
-        } else {
-            exitCode = htmlExitCode;
-        }
-
-        if (!CloseClipboard())
-        {
+        if (!EmptyClipboard()) {
             exitCode = -2;
+        } else {
+            // html text
+            int htmlExitCode = setClipboardData(cfid, buf, strlen(buf));
+
+            if (!htmlExitCode) {
+                // Set fall back text if available
+                size_t fallbackPlaintextLen = fallbackPlaintext ? wcslen(fallbackPlaintext) + 1 : 0;
+                if (fallbackPlaintext) {
+                    // TODO: we should use CF_UNICODETEXT here instead?
+                    exitCode = setClipboardData(CF_TEXT, fallbackPlaintext, fallbackPlaintextLen * sizeof(wchar_t));
+                }
+            } else {
+                exitCode = htmlExitCode;
+            }
+
+            if (!CloseClipboard())
+            {
+                exitCode = -3;
+            }
         }
     }
     else
