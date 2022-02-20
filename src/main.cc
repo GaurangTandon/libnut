@@ -1,5 +1,6 @@
 #include <napi.h>
 
+#include "clipboard.h"
 #include "keypress.h"
 #include "microsleep.h"
 #include "MMBitmap.h"
@@ -791,6 +792,25 @@ Napi::Object _captureScreen(const Napi::CallbackInfo &info)
 	return obj;
 }
 
+Napi::Number _setClipboardHTML(const Napi::CallbackInfo &info)
+{
+	auto env = info.Env();
+
+	std::string htmlString = info[0].As<Napi::String>();
+	std::string plainTextString;
+	try
+	{
+		plainTextString = info[1].As<Napi::String>();
+	}
+	catch (std::exception &e)
+	{
+		plainTextString = "";
+	}
+	auto returnValue = setClipboardHTML(htmlString.c_str(), plainTextString.c_str());
+
+	return Napi::Number::New(env, returnValue);
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
 	exports.Set(Napi::String::New(env, "dragMouse"), Napi::Function::New(env, _dragMouse));
@@ -816,6 +836,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
 	exports.Set(Napi::String::New(env, "captureScreen"), Napi::Function::New(env, _captureScreen));
 	exports.Set(Napi::String::New(env, "getXDisplayName"), Napi::Function::New(env, _getXDisplayName));
 	exports.Set(Napi::String::New(env, "setXDisplayName"), Napi::Function::New(env, _setXDisplayName));
+
+	exports.Set(Napi::String::New(env, "setClipboardHTML"), Napi::Function::New(env, _setClipboardHTML));
 
 	return exports;
 }
