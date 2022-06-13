@@ -68,10 +68,9 @@ char *prepareHTMLDescriptor(const char *html)
     return buf;
 }
 
-int setClipboardData(int clipboardDescriptor, char* buf, size_t allocSize) {
+int setClipboardData(int clipboardDescriptor, char *buf, size_t allocSize)
+{
     int exitCode = 0;
-
-    printf("Clipboard contents: %s\n", buf);
 
     // Allocate global memory for transfer to clipboard context
     // TODO: is this susceptible to memory leaks? Should we do +1 to buffer size?
@@ -147,20 +146,27 @@ int setClipboardHTML(const char *html, const char *fallbackPlaintext)
 
     if (OpenClipboard(NULL))
     {
-        if (!EmptyClipboard()) {
+        if (!EmptyClipboard())
+        {
             exitCode = -2;
-        } else {
+        }
+        else
+        {
             // html text
             int htmlExitCode = setClipboardData(cfid, buf, strlen(buf));
 
-            if (!htmlExitCode) {
+            if (!htmlExitCode)
+            {
                 // Set fall back text if available
                 size_t fallbackPlaintextLen = fallbackPlaintext ? wcslen(fallbackPlaintext) + 1 : 0;
-                if (fallbackPlaintext) {
+                if (fallbackPlaintext)
+                {
                     // TODO: we should use CF_UNICODETEXT here instead?
                     exitCode = setClipboardData(CF_TEXT, fallbackPlaintext, fallbackPlaintextLen * sizeof(wchar_t));
                 }
-            } else {
+            }
+            else
+            {
                 exitCode = htmlExitCode;
             }
 
