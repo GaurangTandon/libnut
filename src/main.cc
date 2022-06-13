@@ -777,6 +777,17 @@ Napi::Object _captureScreen(const Napi::CallbackInfo &info)
 	return obj;
 }
 
+Napi::Number _setClipboardText(const Napi::CallbackInfo &info)
+{
+	auto env = info.Env();
+
+	std::string plainText = info[0].As<Napi::String>();
+	// TODO: actually set only plain text and not HTML
+	auto returnValue = setClipboardHTML(plainText.c_str(), plainText.c_str());
+
+	return Napi::Number::New(env, returnValue);
+}
+
 Napi::Number _setClipboardHTML(const Napi::CallbackInfo &info)
 {
 	auto env = info.Env();
@@ -823,6 +834,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
 	// exports.Set(Napi::String::New(env, "setXDisplayName"), Napi::Function::New(env, _setXDisplayName));
 
 	exports.Set(Napi::String::New(env, "setClipboardHTML"), Napi::Function::New(env, _setClipboardHTML));
+	exports.Set(Napi::String::New(env, "setClipboardText"), Napi::Function::New(env, _setClipboardText));
 
 	return exports;
 }
