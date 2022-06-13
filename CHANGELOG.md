@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.1.8
+- Bugfix: Modifier keys are not properly released on macOS [(nut-tree/nut-js#264)](https://github.com/nut-tree/nut.js/issues/264)
+- Bugfix: Fix mouse clicks with modifiers on macOS [(nut-tree/nut-js#273)](https://github.com/nut-tree/nut.js/issues/273)
+
+## 2.1.7
+
+- Enhancement: Disable microsleep between keypresses on Windows and Linux [(#101)](https://github.com/nut-tree/libnut/issues/101)
+- Enhancement: Add mappings for missing numpad keys [(#102)](https://github.com/nut-tree/libnut/pull/102)
+- Enhancement: Added missing key mappings [(#103)](https://github.com/nut-tree/libnut/pull/103)
+- Bugfix: Revert keyboardInput to use scancodes [(PR #107)](https://github.com/nut-tree/libnut/pull/107)
+- Bugfix: Updated doubleClick implementation to fire two up/down cycles [(nut-tree/nut-js#373)](https://github.com/nut-tree/nut.js/issues/373)
+- Enhancement: Determine Windows doubleclick interval [(#116)](https://github.com/nut-tree/libnut/issues/116)
+- Bugfix: Mouse click doesn't work on external monitor with negative x and y [(#71)](https://github.com/nut-tree/libnut/issues/71)
+- Bugfix: macOS doubleclick fires two doubleclick events [(#120)](https://github.com/nut-tree/libnut/issues/120)
+
+## 2.1.6
+
+- Enhancement: Numpad buttons don't work on Linux [(nut-tree/nut.js#360)](https://github.com/nut-tree/nut.js/issues/360)
+- Bugfix: Issue with keyboard.type in to Spotlight on MacOS [(nut-tree/nut.js#152)](https://github.com/nut-tree/nut.js/issues/152)
+
+## 2.1.5
+
+- Bugfix: Keypresses not properly caught on Windows [(#94)](https://github.com/nut-tree/libnut/issues/94)
+- Enhancement: Enable some kind of warning / info message in case system requirements are not met [(#91)](https://github.com/nut-tree/libnut/issues/91)
+
 ## 2.1.4
 
 - Bugfix: Windows display scaling is applied in wrong direction [(#92)](https://github.com/nut-tree/libnut/issues/92)
