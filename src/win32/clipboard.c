@@ -158,7 +158,7 @@ int setClipboardHTML(const char *html, const char *fallbackPlaintext)
             if (!htmlExitCode)
             {
                 // Set fall back text if available
-                size_t fallbackPlaintextLen = fallbackPlaintext ? wcslen(fallbackPlaintext) + 1 : 0;
+                size_t fallbackPlaintextLen = fallbackPlaintext ? strlen(fallbackPlaintext) + 1 : 0;
                 if (fallbackPlaintext)
                 {
                     // TODO: we should use CF_UNICODETEXT here instead?
